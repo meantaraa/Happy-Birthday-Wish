@@ -57,6 +57,13 @@ var w = c.width = window.innerWidth,
 
 ctx.font = opts.charSize + 'px Verdana';
 
+/**
+ * Represents a single character in the animation, handling its lifecycle from firework to balloon.
+ * @param {string} char - The character to be rendered.
+ * @param {number} x - The target x-coordinate of the character.
+ * @param {number} y - The target y-coordinate of the character.
+ * @constructor
+ */
 function Letter( char, x, y ){
 	this.char = char;
 	this.x = x;
@@ -76,6 +83,10 @@ function Letter( char, x, y ){
 	
 	this.reset();
 }
+
+/**
+ * Resets the letter to its initial 'firework' phase, preparing it for a new animation cycle.
+ */
 Letter.prototype.reset = function(){
 	
 	this.phase = 'firework';
@@ -86,6 +97,10 @@ Letter.prototype.reset = function(){
 	this.lineWidth = opts.fireworkBaseLineWidth + opts.fireworkAddedLineWidth * Math.random();
 	this.prevPoints = [ [ 0, hh, 0 ] ];
 }
+
+/**
+ * Advances the letter's animation by one frame, handling its logic based on the current phase ('firework', 'contemplate', 'balloon').
+ */
 Letter.prototype.step = function(){
 	
 	if( this.phase === 'firework' ){
@@ -299,6 +314,16 @@ Letter.prototype.step = function(){
 		}
 	}
 }
+
+/**
+ * Represents a particle (shard) created when a firework explodes.
+ * @param {number} x - The initial x-coordinate of the shard.
+ * @param {number} y - The initial y-coordinate of the shard.
+ * @param {number} vx - The initial x-velocity of the shard.
+ * @param {number} vy - The initial y-velocity of the shard.
+ * @param {string} color - The color of the shard.
+ * @constructor
+ */
 function Shard( x, y, vx, vy, color ){
 	
 	var vel = opts.fireworkShardBaseVel + opts.fireworkShardAddedVel * Math.random();
@@ -316,6 +341,10 @@ function Shard( x, y, vx, vy, color ){
 	
 	this.size = opts.fireworkShardBaseSize + opts.fireworkShardAddedSize * Math.random();
 }
+
+/**
+ * Updates the shard's position and renders it on the canvas. It also handles the shard's lifecycle.
+ */
 Shard.prototype.step = function(){
 	
 	this.x += this.vx;
@@ -345,6 +374,13 @@ Shard.prototype.step = function(){
 	if( this.prevPoints[ 0 ][ 1 ] > hh )
 		this.alive = false;
 }
+
+/**
+ * Generates the path for drawing a balloon shape on the canvas context.
+ * @param {number} x - The x-coordinate of the balloon's base.
+ * @param {number} y - The y-coordinate of the balloon's base.
+ * @param {number} size - The size of the balloon.
+ */
 function generateBalloonPath( x, y, size ){
 	
 	ctx.moveTo( x, y );
@@ -356,6 +392,10 @@ function generateBalloonPath( x, y, size ){
 									   x,            y );
 }
 
+/**
+ * The main animation loop. It clears the canvas, updates and draws each letter,
+ * and requests the next animation frame. It also resets the animation when all letters are done.
+ */
 function anim(){
 	
 	window.requestAnimationFrame( anim );
@@ -380,6 +420,7 @@ function anim(){
 			letters[ l ].reset();
 }
 
+// Create and initialize all Letter objects.
 for( var i = 0; i < opts.strings.length; ++i ){
 	for( var j = 0; j < opts.strings[ i ].length; ++j ){
 		letters.push( new Letter( opts.strings[ i ][ j ], 
@@ -390,6 +431,10 @@ for( var i = 0; i < opts.strings.length; ++i ){
 
 anim();
 
+/**
+ * Handles the browser window resize event.
+ * It updates the canvas dimensions and related variables to make the animation responsive.
+ */
 window.addEventListener( 'resize', function(){
 	
 	w = c.width = window.innerWidth;
